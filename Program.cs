@@ -8,9 +8,10 @@ namespace AdventOfCode2019Day1
     {
         static void Main(string[] args)
         {
-            var totalFuelUsage = 0;
             try
             {
+                var fuelUsages = new List<int>();
+                var totalFuelUsagePart1 = 0;
                 using (StreamReader sr = new StreamReader("input.txt"))
                 {
                     string strMass;
@@ -18,11 +19,18 @@ namespace AdventOfCode2019Day1
                     {
                         if (Int32.TryParse(strMass, out int mass))
                         {
-                            totalFuelUsage += CalculateFuelUsage(mass);
+                            totalFuelUsagePart1 += CalculateFuelUsage(mass);
+                            fuelUsages.Add(CalculateTotalFuelUsage(mass));
                         }
                     }
                 }
-                Console.WriteLine($"The total fuel usage is {totalFuelUsage}.");
+                var totalFuelUsagePart2 = 0;
+                foreach (var fuelUsage in fuelUsages)
+                {
+                    totalFuelUsagePart2 += fuelUsage;
+                }
+                Console.WriteLine($"Part 1: The total fuel usage is {totalFuelUsagePart1}.");
+                Console.WriteLine($"Part 2: The total fuel usage is {totalFuelUsagePart2}.");
             }
             catch (IOException e)
             {
@@ -31,5 +39,17 @@ namespace AdventOfCode2019Day1
         }
 
         static int CalculateFuelUsage(int mass) => (mass / 3) - 2;
+
+        static int CalculateTotalFuelUsage(int initialMass)
+        {
+            var totalFuelUsage = CalculateFuelUsage(initialMass);
+            var possibleAdditionalFuel = CalculateFuelUsage(totalFuelUsage);
+            while (possibleAdditionalFuel > 0)
+            {
+                totalFuelUsage += possibleAdditionalFuel;
+                possibleAdditionalFuel = CalculateFuelUsage(possibleAdditionalFuel);
+            }
+            return totalFuelUsage;
+        }
     }
 }
